@@ -8,7 +8,7 @@ services:
       - REACT_APP_API_URL_TRACKER_PASSWORD=xxx
       - REACT_APP_API_URL_TRACKER=https://skillab-tracker.csd.auth.gr
       - REACT_APP_API_URL_KU_PUBLIC=https://se.uom.gr/skillab-public-ku-detection
-      - REACT_APP_INSTALLATION=citizen
+      - REACT_APP_INSTALLATION=education
       - REACT_APP_API_URL_USER_MANAGEMENT=http://localhost:8081
       - REACT_APP_API_URL_SKILLS_DIVERSITY=http://localhost:8870
       - REACT_APP_API_URL_SKILL_DEMAND_MATRIX=http://localhost:8872
@@ -16,11 +16,12 @@ services:
       - REACT_APP_API_URL_SKILL_AGEING=http://localhost:8002
       - REACT_APP_API_URL_GIANT_COMPONENT_NETWORKS=http://localhost:8003
       - REACT_APP_API_URL_OCCUPATIONAL_DEMAND_FORECASTER=http://localhost:8877
+      - REACT_APP_API_URL_ESCOPLUS_SKILLS_EXTENDER=http://localhost:8004
     restart: unless-stopped
     ports:
       - '3000:3000'
 
-
+  
   # -- User management --
   user-management-backend:
     image: skillabproject/user-management:0.1.88
@@ -34,7 +35,7 @@ services:
       - SPRING_JPA_HIBERNATE_DDL-AUTO=update
       - SPRING_MAIL_USERNAME=aaaa@gmail.com #email for sending notifications, to be updated
       - SPRING_MAIL_PASSWORD=aaaaaaaaaaaaaaaa #app password for the email, to be updated
-      - APP_INSTALLATION=citizen
+      - APP_INSTALLATION=education
       - APP_ADMIN_EMAIL=aaaa@gmail.com #email for the admin user, to be updated
       - APP_ADMIN_PASSWORD=aaaaaaaa #password for the admin user, to be updated
       - APP_JWT_SECRET=secretkey #secret key for JWT, to be updated
@@ -181,6 +182,22 @@ services:
     restart: unless-stopped
 
 
+  # -- esco-plus-skills-extender --
+  escoplus-skills-extender:
+    image: skillabproject/escoplus-skills-extender:0.1.27
+    container_name: escoplus-skills-extender
+    environment:
+      - TRACKER_API=https://skillab-tracker.csd.auth.gr/api
+      - TRACKER_USERNAME=
+      - TRACKER_PASSWORD=
+    volumes:
+      - escoplus-skills-extender_analyses:/app/Completed_Analyses
+    restart: unless-stopped
+    ports:
+      - '8004:8000'
+
+
+
 volumes:
   user_management_postgresql_data:
   employee_management_postgresql_data:
@@ -192,3 +209,4 @@ volumes:
   skill-gap-longterm:
   skill-ageing_analyses:
   giant-component-networks_analyses:
+  escoplus-skills-extender_analyses:
