@@ -40,6 +40,7 @@ services:
       - APP_INSTALLATION=industry
       - APP_ADMIN_EMAIL=aaaa@gmail.com #email for the admin user, to be updated
       - APP_ADMIN_PASSWORD=aaaaaaaa #password for the admin user, to be updated
+      - APP_ORGANIZATION_NAME=Organization #name of the organization, to be updated
       - APP_JWT_SECRET=secretkey #secret key for JWT, to be updated
       - FRONTEND_URL=http://localhost:3000
       - TRACKER_API_URL=https://skillab-tracker.csd.auth.gr
@@ -217,8 +218,7 @@ services:
 
   # -- hiring-management --
   hiring-management-backend:
-    build: .
-    image: ${DOCKER_REG}${DOCKER_REPO}${APP_NAME}:${DOCKER_TAG}
+    image: skillabproject/hiring-management-app:0.1.16
     container_name: hiring-management-backend
     ports:
       - "8890:8080"
@@ -243,10 +243,10 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://employee-management-db:5432/labourpulse_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
-      - EMPLOYEE_PULSE_SERVICE_OPENAI_KEY=key
       - SPRING_JPA_HIBERNATE_DDL_AUTO= validate
       - SPRING_LIQUIBASE_ENABLED= "true"
       - SPRING_LIQUIBASE_CHANGE_LOG= classpath:db/changelog/changelog-master.yaml
+      - APP_ORGANIZATION_NAME=Organization #name of the organization, to be updated
     ports:
       - "8888:8001"
   
