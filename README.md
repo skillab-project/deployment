@@ -21,7 +21,7 @@ git clone https://github.com/skillab/SKILLAB-platform.git
 cd SKILLAB-platform
 ```
 
-## Flavor Overview
+## 🍓 Flavor Overview
 
 | Component | Citizen | Industry | Education | Policy |
 | --- | --- | --- | --- | --- |
@@ -46,7 +46,7 @@ cd SKILLAB-platform
 | jBPM | ❌ | ❌ | ❌ | ✅ |
 | User Management | ✅ | ✅ | ✅ | ✅ |
 
-## Choose And Run A Flavor
+## 🚀 Choose And Run A Flavor
 
 Pick exactly one flavor folder and start its Compose stack.
 
@@ -78,7 +78,7 @@ cd policy
 docker compose up -d
 ```
 
-## Verify Services
+## 🩺 Verify Services
 
 Check running containers:
 
@@ -96,7 +96,7 @@ Follow logs:
 docker compose logs -f
 ```
 
-## Stop And Remove A Stack
+## 🗑️ Stop And Remove A Stack
 
 From the same flavor folder you started:
 
@@ -110,7 +110,7 @@ To also remove volumes (this deletes local persisted data):
 docker compose down -v
 ```
 
-## Mandatory Configuration Variables
+## ⚙️ Mandatory Configuration Variables
 
 Before launching the containers, users must update specific environment variables in the compose files. These variables ensure secure access and enable critical functionalities like automated email notifications and administrative control.
 
@@ -145,13 +145,13 @@ The `policy` flavor includes advanced AI-driven analytical tools. To enable thes
 
 Note: The Policy platform remains functional without these LLM variables, but certain automated analysis features are disabled.
 
-## Troubleshooting
+## 🐛 Troubleshooting
 
 - Port already in use: stop conflicting local services or change host port mappings in the flavor's `docker-compose.yml`.
 - Pull/auth issues with Docker images: run `docker login` and retry.
 - Service startup ordering: use `docker compose logs -f <service-name>` to inspect readiness and errors.
 
-## Repository Layout
+## 📁 Repository Layout
 
 ```text
 SKILLAB-platform/
