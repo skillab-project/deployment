@@ -23,28 +23,30 @@ cd SKILLAB-platform
 
 ## 🍓 Flavor Overview
 
-| Component | Citizen | Industry | Education | Policy |
-| --- | --- | --- | --- | --- |
-| XAI Occupation Analyser | ✅ | ✅ | ✅ | ✅ |
-| Diversity Analysis | ✅ | ✅ | ✅ | ✅ |
-| HCV - Hierachical Cumulative Voting | ✅ | ✅ | ✅ | ✅ |
-| Skill Ageing | ✅ | ✅ | ✅ | ✅ |
-| Giant Component Networks | ✅ | ✅ | ✅ | ✅ |
-| Escoplus Skills Extender | ❌ | ❌ | ✅ | ✅ |
-| Role Classification | ❌ | ❌ | ❌ | ✅ |
-| Occupational Demand Forecaster | ✅ | ✅ | ✅ | ✅ |
-| KU-Detection | ✅ | ✅ | ✅ | ✅ |
-| SKILLAB Tracker | ✅ | ✅ | ✅ | ✅ |
-| Hiring Management | ❌ | ✅ | ❌ | ❌ |
-| Employee Management | ❌ | ✅ | ❌ | ❌ |
-| Digital Policy Management | ❌ | ❌ | ❌ | ✅ |
-| skillab-ui | ✅ | ✅ | ✅ | ✅ |
-| Curriculum Skills | ✅ | ✅ | ✅ | ✅ |
-| Policy Success Evaluator | ❌ | ❌ | ❌ | ✅ |
-| Future Technology Trends Identifier | ❌ | ❌ | ❌ | ✅ |
-| Organizational Skills Recommender | ❌ | ✅ | ❌ | ❌ |
-| jBPM | ❌ | ❌ | ❌ | ✅ |
-| User Management | ✅ | ✅ | ✅ | ✅ |
+| Component | Citizen | Industry | Education | Policy | GitHub link |
+| --- | --- | --- | --- | --- | --- |
+| XAI Occupation Analyser | ✅ | ✅ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/xai-occupation-analyser) |
+| Diversity Analysis | ✅ | ✅ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/Diversity-analysis) |
+| HCV - Hierarchical Cumulative Voting | ✅ | ✅ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/hierarchical-cumulative-voting) |
+| Skill Ageing | ✅ | ✅ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/skill-ageing) |
+| Giant Component Networks | ✅ | ✅ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/giant_component_networks) |
+| Escoplus Skills Extender | ❌ | ❌ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/escoplus-skills-extender) |
+| Role Classification | ❌ | ❌ | ❌ | ✅ | [View Repository](https://github.com/skillab-project/role_classification) |
+| Occupational Demand Forecaster | ✅ | ✅ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/occupational-demand-forecaster) |
+| KU-Detection | ✅ | ✅ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/KU-Detection) |
+| SKILLAB Tracker | ✅ | ✅ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/Skillab-Tracker) |
+| Hiring Management | ❌ | ✅ | ❌ | ❌ | [View Repository](https://github.com/skillab-project/hiring-management) |
+| Employee Management | ❌ | ✅ | ❌ | ❌ | [View Repository](https://github.com/skillab-project/employee-management) |
+| Digital Policy Management | ❌ | ❌ | ❌ | ✅ | [View Repository](https://github.com/skillab-project/digital-policy-management) |
+| skillab-ui | ✅ | ✅ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/skillab-ui) |
+| Curriculum Skills | ✅ | ✅ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/curriculum-skills) |
+| Policy Success Evaluator | ❌ | ❌ | ❌ | ✅ | [View Repository](https://github.com/skillab-project/digital-transformation-policymaker/tree/main/policy-success-evaluator) |
+| Future Technology Trends Identifier | ❌ | ❌ | ❌ | ✅ | [View Repository](https://github.com/skillab-project/digital-transformation-policymaker/tree/main/future-technology-trends-identifier) |
+| Organizational Skills Recommender | ❌ | ✅ | ❌ | ❌ | [View Repository](https://github.com/skillab-project/organizational_skills_recommender) |
+| jBPM | ❌ | ❌ | ❌ | ✅ | * |
+| User Management | ✅ | ✅ | ✅ | ✅ | [View Repository](https://github.com/skillab-project/user-management) |
+
+**jBPM is used “of the shelf” by pulling the Docker image maintained by the jBPM community.*
 
 ## 🚀 Choose And Run A Flavor
 
