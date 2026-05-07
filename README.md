@@ -167,3 +167,7 @@ SKILLAB-platform/
 │   └── docker-compose.yml
 └── README.md
 ```
+
+## 🏛️ Architecture
+
+![](./docs/SKILLAB_container_architecture.svg)
