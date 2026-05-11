@@ -1,7 +1,7 @@
 services:
   # -- UI --
   ui:
-    image: skillabproject/ui:0.1.145
+    image: skillabproject/ui:0.1.148
     container_name: ui
     environment:
       - REACT_APP_API_URL_TRACKER_USERNAME=event_public
@@ -26,7 +26,7 @@ services:
   
   # -- User management --
   user-management-backend:
-    image: skillabproject/user-management:0.1.88
+    image: skillabproject/user-management:0.1.89
     container_name: user-management-backend
     depends_on:
       - user-management-db
@@ -37,7 +37,7 @@ services:
       - SPRING_JPA_HIBERNATE_DDL-AUTO=update
       - SPRING_MAIL_USERNAME=aaaa@gmail.com #email for sending notifications, to be updated
       - SPRING_MAIL_PASSWORD=aaaaaaaaaaaaaaaa #app password for the email, to be updated
-      - APP_INSTALLATION=industry
+      - APP_INSTALLATION=citizen,industry #the intallation type for the admin user
       - APP_ADMIN_EMAIL=aaaa@gmail.com #email for the admin user, to be updated
       - APP_ADMIN_PASSWORD=aaaaaaaa #password for the admin user, to be updated
       - APP_ORGANIZATION_NAME=Organization #name of the organization, to be updated
@@ -82,7 +82,7 @@ services:
 
   # -- hierarchical-cumulative-voting --
   hierarchical-cumulative-voting:
-    image: skillabproject/hierarchical-cumulative-voting:0.1.44
+    image: skillabproject/hierarchical-cumulative-voting:0.1.46
     container_name: hierarchical-cumulative-voting
     environment:
       - PYTHONUNBUFFERED=1
@@ -102,7 +102,7 @@ services:
       mysql-curriculum-skill:
         condition: service_healthy
     container_name: curriculum-skills
-    image: skillabproject/curriculum-skills:0.1.133
+    image: skillabproject/curriculum-skills:0.1.134
     ports:
       - "5002:8000"
     volumes:
@@ -147,7 +147,7 @@ services:
 
   # -- skill-ageing --
   skill-ageing:
-    image: skillabproject/skill-ageing:0.1.39
+    image: skillabproject/skill-ageing:0.1.40
     container_name: skill-ageing
     environment:
       - TRACKER_API=https://skillab-tracker.csd.auth.gr/api
@@ -163,7 +163,7 @@ services:
 
   # -- giant-component-networks --
   giant-component-networks:
-    image: skillabproject/giant-component-networks:0.1.23
+    image: skillabproject/giant-component-networks:0.1.24
     container_name: giant-component-networks
     environment:
       - TRACKER_API=https://skillab-tracker.csd.auth.gr/api
@@ -190,7 +190,7 @@ services:
 
   # -- KU Detection --
   ku-detection-backend:
-    image: skillabproject/ku-detection:0.1.88
+    image: skillabproject/ku-detection:0.1.89
     container_name: ku-detection-backend
     depends_on:
       - ku-detection-db
@@ -218,7 +218,7 @@ services:
 
   # -- hiring-management --
   hiring-management-backend:
-    image: skillabproject/hiring-management-app:0.1.16
+    image: skillabproject/hiring-management-app:0.1.18
     container_name: hiring-management-backend
     ports:
       - "8890:8080"
@@ -234,7 +234,7 @@ services:
 
   # -- employee-management --
   employee-management-backend:
-    image: skillabproject/employee-management-app:0.1.32
+    image: skillabproject/employee-management-app:0.1.40
     container_name: employee-management-backend
     depends_on:
       employee-management-db:

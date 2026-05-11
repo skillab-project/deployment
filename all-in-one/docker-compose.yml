@@ -16,11 +16,14 @@ services:
       - REACT_APP_API_URL_SKILL_AGEING=http://localhost:8002
       - REACT_APP_API_URL_GIANT_COMPONENT_NETWORKS=http://localhost:8003
       - REACT_APP_API_URL_OCCUPATIONAL_DEMAND_FORECASTER=http://localhost:8877
+      - REACT_APP_API_URL_KU=http://localhost:8081/ku-detection-backend
+      - REACT_APP_API_URL_HIRING_MANAGEMENT=http://localhost:8081/hiring-management-backend
+      - REACT_APP_API_URL_EMPLOYEE_MANAGEMENT=http://localhost:8081/employee-management-backend
     restart: unless-stopped
     ports:
       - '3000:3000'
 
-
+  
   # -- User management --
   user-management-backend:
     image: skillabproject/user-management:0.1.89
@@ -34,14 +37,18 @@ services:
       - SPRING_JPA_HIBERNATE_DDL-AUTO=update
       - SPRING_MAIL_USERNAME=aaaa@gmail.com #email for sending notifications, to be updated
       - SPRING_MAIL_PASSWORD=aaaaaaaaaaaaaaaa #app password for the email, to be updated
-      - APP_INSTALLATION=citizen
+      - APP_INSTALLATION=citizen,industry,education,policy #the intallation type for the admin user
       - APP_ADMIN_EMAIL=aaaa@gmail.com #email for the admin user, to be updated
       - APP_ADMIN_PASSWORD=aaaaaaaa #password for the admin user, to be updated
+      - APP_ORGANIZATION_NAME=Organization #name of the organization, to be updated
       - APP_JWT_SECRET=secretkey #secret key for JWT, to be updated
       - FRONTEND_URL=http://localhost:3000
       - TRACKER_API_URL=https://skillab-tracker.csd.auth.gr
       - TRACKER_API_USERNAME=event_public
       - TRACKER_API_PASSWORD=PublicOnly2026
+      - KUDETECTION_SERVICE_URL=http://ku-detection-backend:5000
+      - HIRING_SERVICE_URL=http://hiring-management-backend:8080
+      - EMPLOYEEMANAGEMENT_SERVICE_URL=http://employee-management-backend:8001
     restart: unless-stopped
     ports:
       - '8081:8080'
@@ -181,6 +188,170 @@ services:
     restart: unless-stopped
 
 
+  # -- esco-plus-skills-extender --
+  escoplus-skills-extender:
+    image: skillabproject/escoplus-skills-extender:0.1.30
+    container_name: escoplus-skills-extender
+    environment:
+      - TRACKER_API=https://skillab-tracker.csd.auth.gr/api
+      - TRACKER_USERNAME=event_public
+      - TRACKER_PASSWORD=PublicOnly2026
+    volumes:
+      - escoplus-skills-extender_analyses:/app/Completed_Analyses
+    restart: unless-stopped
+    ports:
+      - '8004:8000'
+  
+
+  # -- role-classification --
+  role-classification:
+    image: skillabproject/role-classification:0.1.18
+    container_name: role-classification
+    environment:
+      - TRACKER_API=https://skillab-tracker.csd.auth.gr/api
+      - TRACKER_USERNAME=event_public
+      - TRACKER_PASSWORD=PublicOnly2026
+    restart: unless-stopped
+    ports:
+      - '8005:8000'
+    volumes:
+      - role-classification_analyses:/app/Completed_Analyses
+
+
+  # -- KU Detection --
+  ku-detection-backend:
+    image: skillabproject/ku-detection:0.1.89
+    container_name: ku-detection-backend
+    depends_on:
+      - ku-detection-db
+    environment:
+      - DB_HOST=ku-detection-db
+      - DB_PORT=5432
+      - DB_NAME=test
+      - DB_USER=root
+      - DB_PASSWORD=root
+    restart: unless-stopped
+    ports:
+      - '5000:5000'
+
+  ku-detection-db:
+    image: postgres:16.2
+    container_name: ku-detection-db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: test
+    volumes:
+      - ku_detection_postgresql_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+
+  # -- hiring-management --
+  hiring-management-backend:
+    image: skillabproject/hiring-management-app:0.1.18
+    container_name: hiring-management-backend
+    ports:
+      - "8890:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://employee-management-db:5432/labourpulse_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+    volumes:
+      - hiring-cvs-data:/data/file-storage/cvs
+    restart: unless-stopped
+
+
+  # -- employee-management --
+  employee-management-backend:
+    image: skillabproject/employee-management-app:0.1.40
+    container_name: employee-management-backend
+    depends_on:
+      employee-management-db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://employee-management-db:5432/labourpulse_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO= validate
+      - SPRING_LIQUIBASE_ENABLED= "true"
+      - SPRING_LIQUIBASE_CHANGE_LOG= classpath:db/changelog/changelog-master.yaml
+      - APP_ORGANIZATION_NAME=Organization #name of the organization, to be updated
+    ports:
+      - "8888:8001"
+  
+  employee-management-db:
+    image: postgres:16-alpine
+    container_name: employee-management-db
+    environment:
+      - POSTGRES_DB=labourpulse_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - employee-management-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d labourpulse_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+
+  #  -- Digital policy management--
+  backend-policy:
+    image: skillabproject/policy:0.1.27
+    container_name: backend-policy
+    depends_on:
+      - db-policy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-policy:5432/test_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=30a301d7257
+    restart: unless-stopped
+    ports:
+      - '8085:8080'
+    
+  db-policy:
+    image: postgres:14.7
+    container_name: db-policy
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 30a301d7257
+      POSTGRES_DB: test_db
+    volumes:
+       - policy_postgresql_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+
+  # -- policy-success-evaluator --
+  policy-success-evaluator:
+    image: skillabproject/policy-success-evaluator:0.1.26
+    container_name: policy-success-evaluator
+    environment:
+      #API_URL: #the url of an instance of ollama
+      #API_TOKEN: #the token for authenticating with the ollama instance
+      POLICY_BASE: "http://backend-policy:8080"
+    ports:
+      - "8878:8878"
+    restart: unless-stopped
+
+
+  # -- future-technology-trends-identifier --
+  future-technology-trends-identifier:
+    image: skillabproject/future-technology-trends-identifier:0.1.13
+    container_name: future-technology-trends-identifier
+    #environment:
+      #API_URL: #the url of an instance of ollama
+      #API_TOKEN: #the token for authenticating with the ollama instance
+    ports:
+      - "8876:8876"
+    volumes:
+      - future_technology_trends_identifier_storage:/app/storage
+      - future_technology_trends_identifier_datasets:/app/esco_data
+    restart: unless-stopped
+
+
+
 volumes:
   user_management_postgresql_data:
   employee_management_postgresql_data:
@@ -192,3 +363,11 @@ volumes:
   skill-gap-longterm:
   skill-ageing_analyses:
   giant-component-networks_analyses:
+  escoplus-skills-extender_analyses:
+  role-classification_analyses:
+  ku_detection_postgresql_data:
+  hiring-cvs-data:
+  employee-management-postgres-data:
+  policy_postgresql_data:
+  future_technology_trends_identifier_storage:
+  future_technology_trends_identifier_datasets:
