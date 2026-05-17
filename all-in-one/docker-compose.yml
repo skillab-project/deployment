@@ -1,4 +1,23 @@
 services:
+  # -- Reverse Proxy (New) --
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - ui
+      - user-management-backend
+      - diversity-analysis
+      - hierarchical-cumulative-voting
+      - curriculum-skills
+      - skill-ageing
+      - giant-component-networks
+      - occupational-demand-forecaster
+    restart: unless-stopped
+
   # -- UI --
   ui:
     image: skillabproject/ui:0.1.148
@@ -9,21 +28,21 @@ services:
       - REACT_APP_API_URL_TRACKER=https://skillab-tracker.csd.auth.gr
       - REACT_APP_API_URL_KU_PUBLIC=https://se.uom.gr/skillab-public-ku-detection
       - REACT_APP_INSTALLATION=citizen
-      - REACT_APP_API_URL_USER_MANAGEMENT=http://localhost:8081
-      - REACT_APP_API_URL_SKILLS_DIVERSITY=http://localhost:8870
-      - REACT_APP_API_URL_SKILL_DEMAND_MATRIX=http://localhost:8872
-      - REACT_APP_API_URL_CURRICULUM_SKILLS=http://localhost:5002
-      - REACT_APP_API_URL_SKILL_AGEING=http://localhost:8002
-      - REACT_APP_API_URL_GIANT_COMPONENT_NETWORKS=http://localhost:8003
-      - REACT_APP_API_URL_OCCUPATIONAL_DEMAND_FORECASTER=http://localhost:8877
-      - REACT_APP_API_URL_KU=http://localhost:8081/ku-detection-backend
-      - REACT_APP_API_URL_HIRING_MANAGEMENT=http://localhost:8081/hiring-management-backend
-      - REACT_APP_API_URL_EMPLOYEE_MANAGEMENT=http://localhost:8081/employee-management-backend
+      # Updated internal paths routed through Nginx
+      - REACT_APP_API_URL_USER_MANAGEMENT=http://localhost/api/user-management
+      - REACT_APP_API_URL_SKILLS_DIVERSITY=http://localhost/api/diversity
+      - REACT_APP_API_URL_SKILL_DEMAND_MATRIX=http://localhost/api/hcv
+      - REACT_APP_API_URL_CURRICULUM_SKILLS=http://localhost/api/curriculum
+      - REACT_APP_API_URL_SKILL_AGEING=http://localhost/api/skill-ageing
+      - REACT_APP_API_URL_GIANT_COMPONENT_NETWORKS=http://localhost/api/gcn
+      - REACT_APP_API_URL_OCCUPATIONAL_DEMAND_FORECASTER=http://localhost/api/forecaster
+      - REACT_APP_API_URL_KU=http://localhost/api/user-management/ku-detection-backend
+      - REACT_APP_API_URL_HIRING_MANAGEMENT=http://localhost/api/user-management/hiring-management-backend
+      - REACT_APP_API_URL_EMPLOYEE_MANAGEMENT=http://localhost/api/user-management/employee-management-backend
     restart: unless-stopped
     ports:
-      - '3000:3000'
+      - "3000:3000"
 
-  
   # -- User management --
   user-management-backend:
     image: skillabproject/user-management:0.1.89
@@ -35,14 +54,14 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_JPA_HIBERNATE_DDL-AUTO=update
-      - SPRING_MAIL_USERNAME=aaaa@gmail.com #email for sending notifications, to be updated
-      - SPRING_MAIL_PASSWORD=aaaaaaaaaaaaaaaa #app password for the email, to be updated
-      - APP_INSTALLATION=citizen,industry,education,policy #the intallation type for the admin user
-      - APP_ADMIN_EMAIL=aaaa@gmail.com #email for the admin user, to be updated
-      - APP_ADMIN_PASSWORD=aaaaaaaa #password for the admin user, to be updated
-      - APP_ORGANIZATION_NAME=Organization #name of the organization, to be updated
-      - APP_JWT_SECRET=secretkey #secret key for JWT, to be updated
-      - FRONTEND_URL=http://localhost:3000
+      - SPRING_MAIL_USERNAME=aaaa@gmail.com
+      - SPRING_MAIL_PASSWORD=aaaaaaaaaaaaaaaa
+      - APP_INSTALLATION=citizen,industry,education,policy
+      - APP_ADMIN_EMAIL=aaaa@gmail.com
+      - APP_ADMIN_PASSWORD=aaaaaaaa
+      - APP_ORGANIZATION_NAME=Organization
+      - APP_JWT_SECRET=secretkey
+      - FRONTEND_URL=http://localhost # Updated to standard HTTP port 80
       - TRACKER_API_URL=https://skillab-tracker.csd.auth.gr
       - TRACKER_API_USERNAME=event_public
       - TRACKER_API_PASSWORD=PublicOnly2026
@@ -51,7 +70,7 @@ services:
       - EMPLOYEEMANAGEMENT_SERVICE_URL=http://employee-management-backend:8001
     restart: unless-stopped
     ports:
-      - '8081:8080'
+      - "8081:8080"
 
   user-management-db:
     image: postgres:14.7
@@ -62,8 +81,7 @@ services:
       POSTGRES_DB: test_db
     restart: unless-stopped
     volumes:
-       - user_management_postgresql_data:/var/lib/postgresql/data
-
+      - user_management_postgresql_data:/var/lib/postgresql/data
 
   # -- diversity-analysis --
   diversity-analysis:
@@ -77,8 +95,7 @@ services:
       - diversity_data:/app/data
     restart: unless-stopped
     ports:
-      - '8870:8870'
-  
+      - "8870:8870"
 
   # -- hierarchical-cumulative-voting --
   hierarchical-cumulative-voting:
@@ -94,7 +111,6 @@ services:
     restart: unless-stopped
     ports:
       - "8872:8000"
-  
 
   # -- curriculum-skills --
   curriculum-skills:
@@ -122,11 +138,15 @@ services:
       uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8000/curriculum-skills/health >/dev/null 2>&1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://localhost:8000/curriculum-skills/health >/dev/null 2>&1",
+        ]
       interval: 30s
       timeout: 5s
       retries: 5
-  
+
   mysql-curriculum-skill:
     image: skillabproject/mysql-curriculum-skill:20260423
     container_name: mysql-curriculum-skill
@@ -144,7 +164,6 @@ services:
       timeout: 3s
       retries: 10
 
-
   # -- skill-ageing --
   skill-ageing:
     image: skillabproject/skill-ageing:0.1.40
@@ -158,8 +177,7 @@ services:
       - skill-ageing_analyses:/app/Completed_Analyses
     restart: unless-stopped
     ports:
-      - '8002:8000'
-
+      - "8002:8000"
 
   # -- giant-component-networks --
   giant-component-networks:
@@ -174,8 +192,7 @@ services:
       - giant-component-networks_analyses:/app/Completed_Analyses
     restart: unless-stopped
     ports:
-      - '8003:8000'
-  
+      - "8003:8000"
 
   # -- occupational-demand-forecaster --
   occupational-demand-forecaster:
@@ -186,7 +203,6 @@ services:
     ports:
       - "8877:8877"
     restart: unless-stopped
-
 
   # -- esco-plus-skills-extender --
   escoplus-skills-extender:
@@ -200,8 +216,7 @@ services:
       - escoplus-skills-extender_analyses:/app/Completed_Analyses
     restart: unless-stopped
     ports:
-      - '8004:8000'
-  
+      - "8004:8000"
 
   # -- role-classification --
   role-classification:
@@ -213,10 +228,9 @@ services:
       - TRACKER_PASSWORD=PublicOnly2026
     restart: unless-stopped
     ports:
-      - '8005:8000'
+      - "8005:8000"
     volumes:
       - role-classification_analyses:/app/Completed_Analyses
-
 
   # -- KU Detection --
   ku-detection-backend:
@@ -232,7 +246,7 @@ services:
       - DB_PASSWORD=root
     restart: unless-stopped
     ports:
-      - '5000:5000'
+      - "5000:5000"
 
   ku-detection-db:
     image: postgres:16.2
@@ -244,7 +258,6 @@ services:
     volumes:
       - ku_detection_postgresql_data:/var/lib/postgresql/data
     restart: unless-stopped
-
 
   # -- hiring-management --
   hiring-management-backend:
@@ -261,7 +274,6 @@ services:
       - hiring-cvs-data:/data/file-storage/cvs
     restart: unless-stopped
 
-
   # -- employee-management --
   employee-management-backend:
     image: skillabproject/employee-management-app:0.1.40
@@ -276,10 +288,10 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO= validate
       - SPRING_LIQUIBASE_ENABLED= "true"
       - SPRING_LIQUIBASE_CHANGE_LOG= classpath:db/changelog/changelog-master.yaml
-      - APP_ORGANIZATION_NAME=Organization #name of the organization, to be updated
+      - APP_ORGANIZATION_NAME=Organization
     ports:
       - "8888:8001"
-  
+
   employee-management-db:
     image: postgres:16-alpine
     container_name: employee-management-db
@@ -296,7 +308,6 @@ services:
       retries: 5
     restart: unless-stopped
 
-
   #  -- Digital policy management--
   backend-policy:
     image: skillabproject/policy:0.1.27
@@ -309,8 +320,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=30a301d7257
     restart: unless-stopped
     ports:
-      - '8085:8080'
-    
+      - "8085:8080"
+
   db-policy:
     image: postgres:14.7
     container_name: db-policy
@@ -319,38 +330,29 @@ services:
       POSTGRES_PASSWORD: 30a301d7257
       POSTGRES_DB: test_db
     volumes:
-       - policy_postgresql_data:/var/lib/postgresql/data
+      - policy_postgresql_data:/var/lib/postgresql/data
     restart: unless-stopped
-
 
   # -- policy-success-evaluator --
   policy-success-evaluator:
     image: skillabproject/policy-success-evaluator:0.1.26
     container_name: policy-success-evaluator
     environment:
-      #API_URL: #the url of an instance of ollama
-      #API_TOKEN: #the token for authenticating with the ollama instance
       POLICY_BASE: "http://backend-policy:8080"
     ports:
       - "8878:8878"
     restart: unless-stopped
 
-
   # -- future-technology-trends-identifier --
   future-technology-trends-identifier:
     image: skillabproject/future-technology-trends-identifier:0.1.13
     container_name: future-technology-trends-identifier
-    #environment:
-      #API_URL: #the url of an instance of ollama
-      #API_TOKEN: #the token for authenticating with the ollama instance
     ports:
       - "8876:8876"
     volumes:
       - future_technology_trends_identifier_storage:/app/storage
       - future_technology_trends_identifier_datasets:/app/esco_data
     restart: unless-stopped
-
-
 
 volumes:
   user_management_postgresql_data:
